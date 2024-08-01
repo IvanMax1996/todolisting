@@ -41,7 +41,7 @@ export class TodolistService {
         item.filter(item => {
           if (status === Status.Active) return !item.completed;
           else if (status === Status.Completed) return item.completed;
-          else return this.todos$;
+          else return item;
         })
       )
     );
