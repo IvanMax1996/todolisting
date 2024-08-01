@@ -1,0 +1,42 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  max-width: 590px;
+  width: 100%;
+  padding-inline: 20px;
+}
+
+.header {
+  margin: 0 auto;
+}
+
+.info {
+  text-align: center;
+
+  & p {
+    color: var(--color-info-text);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+
+  & p:not(:last-child) {
+    margin-block: 11px;
+  }
+}
+
+.title {
+  display: inline-block;
+
+  font-size: 80px;
+  font-weight: 200;
+
+  color: var(--color-title);
+
+  cursor: pointer;
+}
+
+.todolist {
+  margin-bottom: 40px;
+
+  background-color: var(--color-white);
+  box-shadow: 0 2px 4px #0003, 0 25px 50px #0000001a;
+}
