@@ -48,12 +48,9 @@ export class TodolistService {
   }
 
   removeItem(id: number): void {
-    let indexItem: number | null = null;
-    const todoItem: TodoItem | undefined = this.todos$.value.find(
+    const indexItem: number = this.todos$.value.findIndex(
       item => item.id === id
     );
-
-    if (todoItem) indexItem = this.todos$.value.indexOf(todoItem);
 
     this.todos$.next((this.todos$.value as any).toSpliced(indexItem, 1));
   }
