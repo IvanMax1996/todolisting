@@ -48,7 +48,7 @@ export class TodolistService {
   }
 
   removeItem(id: number): void {
-    let indexItem!: number;
+    let indexItem: number | null = null;
     const todoItem: TodoItem | undefined = this.todos$.value.find(
       item => item.id === id
     );
