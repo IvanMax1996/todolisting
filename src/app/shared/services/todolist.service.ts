@@ -52,7 +52,9 @@ export class TodolistService {
       item => item.id === id
     );
 
-    this.todos$.next((this.todos$.value as any).toSpliced(indexItem, 1));
+    this.todos$.value.splice(indexItem, 1)
+    
+    this.todos$.next(this.todos$.value);
   }
 
   toggleCheckedItem(todo: TodoItem): void {
