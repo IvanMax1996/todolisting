@@ -76,11 +76,7 @@ export class TodolistService {
 
     arrayResult = this.todos$.value.map(item => {
       if ((status === Status.All && !isCompleted) || status === Status.Active) {
-        if (!item.completed) {
-          return { ...item, completed: true };
-        }
-
-        return item;
+        return { ...item, completed: true };
       } else return { ...item, completed: false };
     });
 
