@@ -1,5 +1,6 @@
 import {
   AfterViewChecked,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
@@ -14,7 +15,8 @@ import { TodolistService } from "../../shared/services/todolist.service";
 @Component({
   selector: "tdl-item",
   templateUrl: "./todolist-item.component.html",
-  styleUrls: ["./todolist-item.component.scss"]
+  styleUrls: ["./todolist-item.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodolistItemComponent implements OnInit, AfterViewChecked {
   @Output() remove = new EventEmitter<TodoItem>();
