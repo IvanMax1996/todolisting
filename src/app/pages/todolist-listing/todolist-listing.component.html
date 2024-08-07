@@ -1,7 +1,7 @@
 <ng-container *ngIf="countTodo > 0">
   <main class="main">
     <ul class="todolist__items-wrap">
-      <ng-container *ngFor="let todo of todoList | async ">
+      <ng-container *ngFor="let todo of todoList | async">
         <tdl-item [todo]="todo" (remove)="removeTodo($event)"></tdl-item>
       </ng-container>
     </ul>
