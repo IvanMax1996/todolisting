@@ -1,14 +1,15 @@
-import { Component } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DoCheck } from "@angular/core";
 import { Status, TodoItem } from "../../shared/types/todolist.type";
 import { TodolistService } from "../../shared/services/todolist.service";
 
 @Component({
   selector: "tdl-listing",
   templateUrl: "./todolist-listing.component.html",
-  styleUrls: ["./todolist-listing.component.scss"]
+  styleUrls: ["./todolist-listing.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TodolistListingComponent {
-  constructor(private todolistService: TodolistService) {}
+export class TodolistListingComponent implements DoCheck {
+  constructor(private todolistService: TodolistService, private cd: ChangeDetectorRef) {}
 
   get status(): Status {
     return this.todolistService.status;
@@ -61,5 +62,9 @@ export class TodolistListingComponent {
     if (this.completedTodos.length === 0 && this.activeTodos.length === 0) {
       this.todolistService.status = Status.All;
     }
+  }
+
+  ngDoCheck(): void {
+    this.cd.detectChanges()
   }
 }
