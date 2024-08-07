@@ -1,17 +1,16 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, ViewChild } from "@angular/core";
+import { Component, ElementRef, ViewChild } from "@angular/core";
 import { Status, TodoItem } from "../../shared/types/todolist.type";
 import { TodolistService } from "../../shared/services/todolist.service";
 
 @Component({
   selector: "tdl-footer",
   templateUrl: "./todolist-footer.component.html",
-  styleUrls: ["./todolist-footer.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ["./todolist-footer.component.scss"]
 })
 export class TodolistFooterComponent {
   @ViewChild("footerBtnRef") btnRef?: ElementRef;
 
-  constructor(private todolistService: TodolistService, private cd: ChangeDetectorRef) {}
+  constructor(private todolistService: TodolistService) {}
 
   get activeTodos(): TodoItem[] {
     let activeArray: TodoItem[] = [];
@@ -82,9 +81,5 @@ export class TodolistFooterComponent {
     if (this.activeTodos.length === 0) {
       this.todolistService.status = Status.All;
     }
-  }
-
-  ngDoCheck() {
-    this.cd.detectChanges()
   }
 }
