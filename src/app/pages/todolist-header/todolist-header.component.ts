@@ -1,14 +1,15 @@
-import { Component } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from "@angular/core";
 import { TodolistService } from "../../shared/services/todolist.service";
 import { Status } from "../../shared/types/todolist.type";
 
 @Component({
   selector: "tdl-header",
   templateUrl: "./todolist-header.component.html",
-  styleUrls: ["./todolist-header.component.scss"]
+  styleUrls: ["./todolist-header.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodolistHeaderComponent {
-  constructor(private todolistService: TodolistService) {}
+  constructor(private todolistService: TodolistService, private cd: ChangeDetectorRef) {}
 
   title: string = "";
   count = 0;
@@ -81,5 +82,9 @@ export class TodolistHeaderComponent {
       this.activeTodosLength,
       this.completedTodosLength
     );
+  }
+
+  ngDoCheck(): void {
+    this.cd.detectChanges()
   }
 }
