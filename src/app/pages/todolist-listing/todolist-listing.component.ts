@@ -1,70 +1,60 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DoCheck } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  Output
+} from "@angular/core";
 import { Status, TodoItem } from "../../shared/types/todolist.type";
 import { TodolistService } from "../../shared/services/todolist.service";
+import { combineLatest } from "rxjs";
+import { TodolistFooterComponent } from "../todolist-footer/todolist-footer.component";
 
 @Component({
   selector: "tdl-listing",
   templateUrl: "./todolist-listing.component.html",
   styleUrls: ["./todolist-listing.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.Default,
+  providers: [TodolistFooterComponent]
 })
-export class TodolistListingComponent implements DoCheck {
-  constructor(private todolistService: TodolistService, private cd: ChangeDetectorRef) {}
+export class TodolistListingComponent {
+  @Input() status!: Status
+  @Output() testThree = new EventEmitter<Status>();
 
-  get status(): Status {
-    return this.todolistService.status;
-  }
+  test = this.todolistService.todos$;
+  activeTodos$ = this.todolistService.activeTodos$;
+  completedTodos$ = this.todolistService.completedTodos$;
 
-  get countTodo(): number {
-    let count: number = 0;
-
-    this.todolistService.todos$.subscribe(item => {
-      count = item.length;
-    });
-
-    return count;
-  }
-
-  get todoList() {
-    return this.todolistService.getItems(this.status);
-  }
-
-  get activeTodos(): TodoItem[] {
-    let activeArray: TodoItem[] = [];
-
-    this.todolistService.activeTodos.subscribe(item => {
-      activeArray = item;
-    });
-
-    return activeArray;
-  }
-
-  get completedTodos(): TodoItem[] {
-    let completedArray: TodoItem[] = [];
-
-    this.todolistService.completedTodos.subscribe(item => {
-      completedArray = item;
-    });
-
-    return completedArray;
-  }
+  constructor(
+    private todolistService: TodolistService,
+    private cd: ChangeDetectorRef,
+    private com: TodolistFooterComponent
+  ) {}
 
   removeTodo(todo: TodoItem): void {
     this.todolistService.removeItem(todo.id);
 
-    if (
-      (this.status === Status.Active && this.activeTodos.length === 0) ||
-      (this.status === Status.Completed && this.completedTodos.length === 0)
-    ) {
-      this.todolistService.toggleBtnVisible = false;
-    }
+    this.test.forEach(item => {
+      if (item.length === 0) this.testThree.emit(Status.All);
+    })
 
-    if (this.completedTodos.length === 0 && this.activeTodos.length === 0) {
-      this.todolistService.status = Status.All;
-    }
+    // combineLatest([this.activeTodos$, this.completedTodos$]).forEach(items => {
+    //   const activeTodosLength = items[0].length;
+    //   const completedTodosLength = items[1].length;
+
+    //   if (activeTodosLength === 0 && completedTodosLength) {
+    //     this.testThree.emit(Status.All);
+    //   }
+    // });
   }
 
-  ngDoCheck(): void {
-    this.cd.detectChanges()
+  ngDoCheck() {
+    console.log(this.status);
+    this.test.forEach(item => {
+      console.log(item)
+    })
   }
+
+
 }

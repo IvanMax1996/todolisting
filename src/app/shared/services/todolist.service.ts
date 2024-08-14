@@ -1,27 +1,29 @@
 import { Injectable } from "@angular/core";
 import { Status, TodoItem } from "../types/todolist.type";
-import { BehaviorSubject, map, Observable } from "rxjs";
+import {
+  BehaviorSubject,
+  map,
+  Observable,
+  combineLatest,
+  switchMap
+} from "rxjs";
 
 @Injectable({
   providedIn: "root"
 })
 export class TodolistService {
   status: Status = Status.All;
-  toggleBtnVisible: boolean = true;
   countId: number = 0;
   todos$: BehaviorSubject<TodoItem[]> = new BehaviorSubject<TodoItem[]>([]);
-
-  get isAllCompleted(): Observable<boolean> {
-    return this.todos$.pipe(map(item => item.every(item => item.completed)));
-  }
-
-  get completedTodos(): Observable<TodoItem[]> {
-    return this.getItems(Status.Completed);
-  }
-
-  get activeTodos(): Observable<TodoItem[]> {
-    return this.getItems(Status.Active);
-  }
+  todosLength$: Observable<number> = this.todos$.pipe(map(item => item.length));
+  activeTodos$: Observable<TodoItem[]> = this.getItems(Status.Active);
+  completedTodos$: Observable<TodoItem[]> = this.getItems(Status.Completed);
+  activeTodosLength$: Observable<number> = this.activeTodos$.pipe(
+    map(item => item.length)
+  );
+  completedTodosLength$: Observable<number> = this.completedTodos$.pipe(
+    map(item => item.length)
+  );
 
   addItem(title: string): void {
     const todoItem: TodoItem = {
@@ -37,11 +39,11 @@ export class TodolistService {
 
   getItems(status: Status): Observable<TodoItem[]> {
     return this.todos$.pipe(
-      map(item =>
-        item.filter(item => {
+      map(items =>
+        items.filter(item => {
           if (status === Status.Active) return !item.completed;
           else if (status === Status.Completed) return item.completed;
-          else return item;
+          else return item
         })
       )
     );
@@ -52,9 +54,11 @@ export class TodolistService {
       item => item.id === id
     );
 
-    this.todos$.value.splice(indexItem, 1)
-    
+    this.todos$.value.splice(indexItem, 1);
+
     this.todos$.next(this.todos$.value);
+
+    
   }
 
   toggleCheckedItem(todo: TodoItem): void {
@@ -71,13 +75,33 @@ export class TodolistService {
     this.todos$.next(arrayResult);
   }
 
-  toggleAll(status: Status, isCompleted: boolean): void {
+  toggleAll(status: Status): void {
     let arrayResult: TodoItem[] = [];
+    let isCompleted: boolean
+
+    if (status === Status.Completed) {
+      this.completedTodos$.forEach(item => {
+        isCompleted = item.every(item => item.completed)
+      })
+    } else {
+      isCompleted = this.todos$.value.every(item => item.completed)
+    }
+    
+    
 
     arrayResult = this.todos$.value.map(item => {
-      if ((status === Status.All && !isCompleted) || status === Status.Active) {
+      if (
+        (this.status === Status.All && !isCompleted) ||
+        this.status === Status.Active
+      ) {
         return { ...item, completed: true };
-      } else return { ...item, completed: false };
+      } else if (this.status === Status.Completed) {
+        return { ...item, completed: true};
+      }
+      
+      return { ...item, completed: false };
+
+    
     });
 
     this.todos$.next(arrayResult);
@@ -107,14 +131,22 @@ export class TodolistService {
     this.todos$.next(arrayResult);
   }
 
-  toggleButtonVisible(
-    activeTodosLength: number,
-    completedTodosLength: number
-  ): void {
-    if (this.status !== Status.All) {
-      if (activeTodosLength === 0 || completedTodosLength === 0) {
-        this.toggleBtnVisible = false;
-      } else this.toggleBtnVisible = true;
-    }
-  }
+  isToggleBtnVisible$: Observable<boolean> = this.todos$.pipe(
+    switchMap(items =>
+      combineLatest([this.activeTodos$, this.completedTodos$]).pipe(
+        map(([activeTodos, completedTodos]) => {
+          if (this.status !== Status.All) {
+            if (this.status === Status.Active) {
+              return !(activeTodos.length === 0 && completedTodos.length >= 0);
+            } else {
+              this.status = Status.Completed
+              return !(completedTodos.length === 0 && activeTodos.length >= 0);
+            } 
+          } 
+            
+          return items.length > 0
+        })
+      )
+    )
+  );
 }

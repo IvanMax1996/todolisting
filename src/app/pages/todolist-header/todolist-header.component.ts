@@ -1,67 +1,25 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
 import { TodolistService } from "../../shared/services/todolist.service";
-import { Status } from "../../shared/types/todolist.type";
+import { Status, TodoItem } from "../../shared/types/todolist.type";
+import { BehaviorSubject, Observable } from "rxjs";
 
 @Component({
   selector: "tdl-header",
   templateUrl: "./todolist-header.component.html",
   styleUrls: ["./todolist-header.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class TodolistHeaderComponent {
-  constructor(private todolistService: TodolistService, private cd: ChangeDetectorRef) {}
+  @Input() status: Status = Status.All
 
   title: string = "";
-  count = 0;
+  todosLength$: Observable<number> = this.todolistService.todosLength$
+  isToggleBtnVisible$: Observable<boolean> = this.todolistService.isToggleBtnVisible$
+  activeTodosLength$: Observable<number> = this.todolistService.activeTodosLength$
+  completedTodosLength$: Observable<number> = this.todolistService.completedTodosLength$
+  test = this.todolistService.todos$
 
-  get status(): Status {
-    return this.todolistService.status;
-  }
-
-  get countTodo(): number {
-    let count: number = 0;
-
-    this.todolistService.todos$.subscribe(item => {
-      count = item.length;
-    });
-
-    return count;
-  }
-
-  get isCompleted(): boolean {
-    let isCompleted: boolean = false;
-
-    this.todolistService.isAllCompleted.subscribe(item => {
-      isCompleted = item;
-    });
-
-    this.count++;
-    return isCompleted;
-  }
-
-  get completedTodosLength(): number {
-    let completedLength: number = 0;
-
-    this.todolistService.completedTodos.subscribe(item => {
-      completedLength = item.length;
-    });
-
-    return completedLength;
-  }
-
-  get activeTodosLength(): number {
-    let activeLength: number = 0;
-
-    this.todolistService.activeTodos.subscribe(item => {
-      activeLength = item.length;
-    });
-
-    return activeLength;
-  }
-
-  get toggleBtnVisible(): boolean {
-    return this.todolistService.toggleBtnVisible;
-  }
+  constructor(private todolistService: TodolistService) {}
 
   addTodo(): void {
     if (this.title) {
@@ -69,22 +27,13 @@ export class TodolistHeaderComponent {
 
       this.title = "";
     }
-
-    if (this.countTodo === 0) {
-      this.todolistService.toggleBtnVisible = false;
-    } else this.todolistService.toggleBtnVisible = true;
   }
 
   toggleAll(): void {
-    this.todolistService.toggleAll(this.status, this.isCompleted);
-
-    this.todolistService.toggleButtonVisible(
-      this.activeTodosLength,
-      this.completedTodosLength
-    );
+    this.todolistService.toggleAll(this.status);
   }
 
-  ngDoCheck(): void {
-    this.cd.detectChanges()
+  ngDoCheck() {
+    
   }
 }

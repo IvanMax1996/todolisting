@@ -1,43 +1,34 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, ViewChild } from "@angular/core";
-import { Status, TodoItem } from "../../shared/types/todolist.type";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Output,
+  ViewChild
+} from "@angular/core";
+import { Status } from "../../shared/types/todolist.type";
 import { TodolistService } from "../../shared/services/todolist.service";
+import { Observable } from "rxjs";
 
 @Component({
   selector: "tdl-footer",
   templateUrl: "./todolist-footer.component.html",
   styleUrls: ["./todolist-footer.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class TodolistFooterComponent {
+  @Output() test = new EventEmitter<Status>();
   @ViewChild("footerBtnRef") btnRef?: ElementRef;
+  @ViewChild("btnRef") btnRefTwo?: ElementRef;
 
-  constructor(private todolistService: TodolistService, private cd: ChangeDetectorRef) {}
 
-  get activeTodos(): TodoItem[] {
-    let activeArray: TodoItem[] = [];
+  activeTodosLength$: Observable<number> =
+    this.todolistService.activeTodosLength$;
+  completedTodosLength$: Observable<number> =
+    this.todolistService.completedTodosLength$;
+    todos = this.todolistService.todos$
 
-    this.todolistService.activeTodos.subscribe(item => {
-      activeArray = item;
-    });
-
-    return activeArray;
-  }
-
-  get completedTodos(): TodoItem[] {
-    let completedArray: TodoItem[] = [];
-
-    this.todolistService.completedTodos.subscribe(item => {
-      completedArray = item;
-    });
-
-    return completedArray;
-  }
-
-  visibilityToggleButton(filteredTodo: TodoItem[]): void {
-    if (filteredTodo.length === 0) {
-      this.todolistService.toggleBtnVisible = false;
-    } else this.todolistService.toggleBtnVisible = true;
-  }
+  constructor(private todolistService: TodolistService) {}
 
   removeActiveClass(event: Event): void {
     const allBtnFooter = document.querySelectorAll(
@@ -54,24 +45,23 @@ export class TodolistFooterComponent {
   }
 
   getActive(event: Event): void {
-    this.todolistService.status = Status.Active;
-
-    this.visibilityToggleButton(this.activeTodos);
+    // this.todolistService.status = Status.Active;
+    this.test.emit(Status.Active);
 
     this.removeActiveClass(event);
   }
 
   getCompleted(event: Event): void {
-    this.todolistService.status = Status.Completed;
+    // this.todolistService.status = Status.Completed;
 
-    this.visibilityToggleButton(this.completedTodos);
+    this.test.emit(Status.Completed);
 
     this.removeActiveClass(event);
   }
 
   getAll(event: Event): void {
-    this.todolistService.status = Status.All;
-    this.todolistService.toggleBtnVisible = true;
+    console.log('клик')
+    this.test.emit(Status.All);
 
     this.removeActiveClass(event);
   }
@@ -79,12 +69,10 @@ export class TodolistFooterComponent {
   clearCompleted(): void {
     this.todolistService.clearCompleted();
 
-    if (this.activeTodos.length === 0) {
-      this.todolistService.status = Status.All;
-    }
+    this.todos.forEach(item => {
+      if (item.length === 0) this.test.emit(Status.All);
+    })
   }
 
-  ngDoCheck(): void {
-    this.cd.detectChanges()
-  }
+ 
 }

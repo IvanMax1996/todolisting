@@ -16,7 +16,7 @@ import { TodolistService } from "../../shared/services/todolist.service";
   selector: "tdl-item",
   templateUrl: "./todolist-item.component.html",
   styleUrls: ["./todolist-item.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class TodolistItemComponent implements OnInit, AfterViewChecked {
   @Output() remove = new EventEmitter<TodoItem>();
@@ -26,44 +26,18 @@ export class TodolistItemComponent implements OnInit, AfterViewChecked {
   isEditing = false;
   randomLabel: string = "";
   title: string = "";
+  activeTodos$ = this.todolistService.activeTodos$;
+  completedTodos$ = this.todolistService.completedTodos$;
 
   constructor(private todolistService: TodolistService) {}
 
-  get completedTodosLength(): number {
-    let completedLength: number = 0;
-
-    this.todolistService.completedTodos.subscribe(item => {
-      completedLength = item.length;
-    });
-
-    return completedLength;
-  }
-
-  get activeTodosLength(): number {
-    let activeLength: number = 0;
-
-    this.todolistService.activeTodos.subscribe(item => {
-      activeLength = item.length;
-    });
-
-    return activeLength;
-  }
-
-  get test() {
-    return this.todo.id;
-  }
-
   removeTodo(): void {
     this.remove.emit(this.todo);
+    
   }
 
   toggleTodo(): void {
     this.todolistService.toggleCheckedItem(this.todo);
-
-    this.todolistService.toggleButtonVisible(
-      this.activeTodosLength,
-      this.completedTodosLength
-    );
   }
 
   startEdit(): void {

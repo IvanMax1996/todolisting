@@ -1,13 +1,13 @@
-<ng-container *ngIf="activeTodos.length > 0 || completedTodos.length > 0">
+<ng-container *ngIf="(activeTodosLength$ | async) !== 0 || (completedTodosLength$ | async) !== 0">
   <div class="todolist__footer">
-    <span class="todolist__count">Осталось задач: {{ activeTodos.length }}</span>
+    <span class="todolist__count">Осталось задач: {{ activeTodosLength$ | async }}</span>
     <div class="todolist__footer-btn-wrap">
-      <button type="button" (click)="getAll($event)" class="active">Все</button>
+      <button #btnRef type="button" (click)="getAll($event)" class="active">Все</button>
       <button type="button" (click)="getActive($event)">Активные</button>
       <button type="button" (click)="getCompleted($event)">Завершённые</button>
     </div>
 
-    <ng-container *ngIf="completedTodos.length > 0">
+    <ng-container *ngIf="completedTodosLength$ | async">
       <button
         type="button"
         class="todolist__footer-clear-btn"
