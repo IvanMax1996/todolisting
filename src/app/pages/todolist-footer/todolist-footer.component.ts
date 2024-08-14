@@ -17,10 +17,9 @@ import { Observable } from "rxjs";
   changeDetection: ChangeDetectionStrategy.Default
 })
 export class TodolistFooterComponent {
-  @Output() test = new EventEmitter<Status>();
+  @Output() status = new EventEmitter<Status>();
   @ViewChild("footerBtnRef") btnRef?: ElementRef;
   @ViewChild("btnRef") btnRefTwo?: ElementRef;
-
 
   activeTodosLength$: Observable<number> =
     this.todolistService.activeTodosLength$;
@@ -46,7 +45,7 @@ export class TodolistFooterComponent {
 
   getActive(event: Event): void {
     // this.todolistService.status = Status.Active;
-    this.test.emit(Status.Active);
+    this.status.emit(Status.Active);
 
     this.removeActiveClass(event);
   }
@@ -54,14 +53,14 @@ export class TodolistFooterComponent {
   getCompleted(event: Event): void {
     // this.todolistService.status = Status.Completed;
 
-    this.test.emit(Status.Completed);
+    this.status.emit(Status.Completed);
 
     this.removeActiveClass(event);
   }
 
   getAll(event: Event): void {
     console.log('клик')
-    this.test.emit(Status.All);
+    this.status.emit(Status.All);
 
     this.removeActiveClass(event);
   }
@@ -70,7 +69,7 @@ export class TodolistFooterComponent {
     this.todolistService.clearCompleted();
 
     this.todos.forEach(item => {
-      if (item.length === 0) this.test.emit(Status.All);
+      if (item.length === 0) this.status.emit(Status.All);
     })
   }
 

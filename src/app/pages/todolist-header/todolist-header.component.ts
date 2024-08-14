@@ -1,22 +1,23 @@
 import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
 import { TodolistService } from "../../shared/services/todolist.service";
-import { Status, TodoItem } from "../../shared/types/todolist.type";
-import { BehaviorSubject, Observable } from "rxjs";
+import { Status } from "../../shared/types/todolist.type";
+import { Observable } from "rxjs";
 
 @Component({
   selector: "tdl-header",
   templateUrl: "./todolist-header.component.html",
   styleUrls: ["./todolist-header.component.scss"],
-  changeDetection: ChangeDetectionStrategy.Default
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodolistHeaderComponent {
-  @Input() status: Status = Status.All
+  @Input() status: Status = Status.All;
 
   title: string = "";
-  todosLength$: Observable<number> = this.todolistService.todosLength$
-  activeTodosLength$: Observable<number> = this.todolistService.activeTodosLength$
-  completedTodosLength$: Observable<number> = this.todolistService.completedTodosLength$
-  test = this.todolistService.todos$
+  todosLength$: Observable<number> = this.todolistService.todosLength$;
+  activeTodosLength$: Observable<number> =
+    this.todolistService.activeTodosLength$;
+  completedTodosLength$: Observable<number> =
+    this.todolistService.completedTodosLength$;
 
   constructor(private todolistService: TodolistService) {}
 
@@ -30,9 +31,5 @@ export class TodolistHeaderComponent {
 
   toggleAll(): void {
     this.todolistService.toggleAll(this.status);
-  }
-
-  ngDoCheck() {
-    
   }
 }

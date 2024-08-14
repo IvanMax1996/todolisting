@@ -3,9 +3,12 @@
 </header>
 
 <section class="todolist">
-  <tdl-header [status]="statusParam"></tdl-header>
-  <tdl-listing (testThree)="status($event)" [status]="statusParam"></tdl-listing>
-  <tdl-footer (test)="status($event)"></tdl-footer>
+  <tdl-header [status]="status"></tdl-header>
+  <tdl-listing
+    (status)="getStatus($event)"
+    [statusValue]="status"
+  ></tdl-listing>
+  <tdl-footer (status)="getStatus($event)"></tdl-footer>
 </section>
 
 <footer class="info">
