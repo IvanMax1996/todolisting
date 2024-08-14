@@ -1,10 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   EventEmitter,
-  Output,
-  ViewChild
+  Output
 } from "@angular/core";
 import { Status } from "../../shared/types/todolist.type";
 import { TodolistService } from "../../shared/services/todolist.service";
@@ -14,19 +12,17 @@ import { Observable } from "rxjs";
   selector: "tdl-footer",
   templateUrl: "./todolist-footer.component.html",
   styleUrls: ["./todolist-footer.component.scss"],
-  changeDetection: ChangeDetectionStrategy.Default
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodolistFooterComponent {
   @Output() status = new EventEmitter<Status>();
-  @ViewChild("footerBtnRef") btnRef?: ElementRef;
-  @ViewChild("btnRef") btnRefTwo?: ElementRef;
 
+  todos$ = this.todolistService.todos$;
   activeTodosLength$: Observable<number> =
     this.todolistService.activeTodosLength$;
   completedTodosLength$: Observable<number> =
     this.todolistService.completedTodosLength$;
-    todos = this.todolistService.todos$
-
+  
   constructor(private todolistService: TodolistService) {}
 
   removeActiveClass(event: Event): void {
@@ -44,22 +40,18 @@ export class TodolistFooterComponent {
   }
 
   getActive(event: Event): void {
-    // this.todolistService.status = Status.Active;
     this.status.emit(Status.Active);
 
     this.removeActiveClass(event);
   }
 
   getCompleted(event: Event): void {
-    // this.todolistService.status = Status.Completed;
-
     this.status.emit(Status.Completed);
 
     this.removeActiveClass(event);
   }
 
   getAll(event: Event): void {
-    console.log('клик')
     this.status.emit(Status.All);
 
     this.removeActiveClass(event);
@@ -68,10 +60,8 @@ export class TodolistFooterComponent {
   clearCompleted(): void {
     this.todolistService.clearCompleted();
 
-    this.todos.forEach(item => {
+    this.todos$.forEach(item => {
       if (item.length === 0) this.status.emit(Status.All);
-    })
+    });
   }
-
- 
 }

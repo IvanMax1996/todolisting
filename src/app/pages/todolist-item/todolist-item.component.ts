@@ -16,7 +16,7 @@ import { TodolistService } from "../../shared/services/todolist.service";
   selector: "tdl-item",
   templateUrl: "./todolist-item.component.html",
   styleUrls: ["./todolist-item.component.scss"],
-  changeDetection: ChangeDetectionStrategy.Default
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodolistItemComponent implements OnInit, AfterViewChecked {
   @Output() remove = new EventEmitter<TodoItem>();
@@ -33,7 +33,6 @@ export class TodolistItemComponent implements OnInit, AfterViewChecked {
 
   removeTodo(): void {
     this.remove.emit(this.todo);
-    
   }
 
   toggleTodo(): void {

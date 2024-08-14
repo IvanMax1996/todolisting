@@ -20,7 +20,7 @@
       </ng-container>
     </ng-template>
 
-    <ng-template ngSwitchCase="completed">
+    <ng-template ngSwitchDefault>
       <ng-container *ngIf="(completedTodosLength$ | async) !== 0">
         <button
           class="todolist__btn-toggle"
