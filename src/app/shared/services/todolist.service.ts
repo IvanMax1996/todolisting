@@ -3,9 +3,7 @@ import { Status, TodoItem } from "../types/todolist.type";
 import {
   BehaviorSubject,
   map,
-  Observable,
-  combineLatest,
-  switchMap
+  Observable
 } from "rxjs";
 
 @Injectable({
@@ -43,7 +41,7 @@ export class TodolistService {
         items.filter(item => {
           if (status === Status.Active) return !item.completed;
           else if (status === Status.Completed) return item.completed;
-          else return item
+          else return item;
         })
       )
     );
@@ -55,19 +53,14 @@ export class TodolistService {
     );
 
     this.todos$.value.splice(indexItem, 1);
-
     this.todos$.next(this.todos$.value);
-
-    
   }
 
   toggleCheckedItem(todo: TodoItem): void {
     let arrayResult: TodoItem[];
 
     arrayResult = this.todos$.value.map(item => {
-      if (item.id === todo.id) {
-        return { ...item, completed: !item.completed };
-      }
+      if (item.id === todo.id) return { ...item, completed: !item.completed };
 
       return item;
     });
@@ -77,37 +70,30 @@ export class TodolistService {
 
   toggleAll(status: Status): void {
     let arrayResult: TodoItem[] = [];
-    let isCompleted: boolean
+    let isCompleted: boolean;
 
     if (status === Status.Completed) {
       this.completedTodos$.forEach(item => {
-        isCompleted = item.every(item => item.completed)
-      })
+        isCompleted = item.every(item => item.completed);
+      });
     } else {
-      isCompleted = this.todos$.value.every(item => item.completed)
+      isCompleted = this.todos$.value.every(item => item.completed);
     }
-    
-    
 
     arrayResult = this.todos$.value.map(item => {
       if (
         (this.status === Status.All && !isCompleted) ||
         this.status === Status.Active
-      ) {
+      )
         return { ...item, completed: true };
-      } else if (this.status === Status.Completed) {
-        return { ...item, completed: true};
-      }
-      
-      return { ...item, completed: false };
 
-    
+      return { ...item, completed: false };
     });
 
     this.todos$.next(arrayResult);
   }
 
-  updateTodo(todo: TodoItem, title: string) {
+  updateTodo(todo: TodoItem, title: string): void {
     let arrayResult: TodoItem[];
 
     arrayResult = this.todos$.value.map(item => {
@@ -130,23 +116,4 @@ export class TodolistService {
 
     this.todos$.next(arrayResult);
   }
-
-  isToggleBtnVisible$: Observable<boolean> = this.todos$.pipe(
-    switchMap(items =>
-      combineLatest([this.activeTodos$, this.completedTodos$]).pipe(
-        map(([activeTodos, completedTodos]) => {
-          if (this.status !== Status.All) {
-            if (this.status === Status.Active) {
-              return !(activeTodos.length === 0 && completedTodos.length >= 0);
-            } else {
-              this.status = Status.Completed
-              return !(completedTodos.length === 0 && activeTodos.length >= 0);
-            } 
-          } 
-            
-          return items.length > 0
-        })
-      )
-    )
-  );
 }

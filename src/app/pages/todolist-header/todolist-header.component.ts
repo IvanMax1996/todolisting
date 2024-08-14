@@ -14,7 +14,6 @@ export class TodolistHeaderComponent {
 
   title: string = "";
   todosLength$: Observable<number> = this.todolistService.todosLength$
-  isToggleBtnVisible$: Observable<boolean> = this.todolistService.isToggleBtnVisible$
   activeTodosLength$: Observable<number> = this.todolistService.activeTodosLength$
   completedTodosLength$: Observable<number> = this.todolistService.completedTodosLength$
   test = this.todolistService.todos$
