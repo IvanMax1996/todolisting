@@ -73,4 +73,16 @@ export class TodolistItemComponent implements OnInit, AfterViewChecked {
       this.inputRef?.nativeElement.focus();
     }
   }
+
+  active(elem: Event) {
+    const itemArray = document.querySelectorAll(".todolist__item");
+
+    itemArray.forEach(item => {
+      item.classList.remove("active");
+    });
+
+    const block = elem.currentTarget as HTMLElement;
+
+    block.classList.add("active");
+  }
 }
