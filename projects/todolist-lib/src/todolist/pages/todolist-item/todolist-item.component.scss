@@ -1,4 +1,6 @@
 :host {
+  position: relative;
+
   display: block;
 
   border-bottom: 1px solid #ededed;
@@ -50,8 +52,6 @@
     border: none;
 
     &:focus {
-      box-shadow: 0 0 2px 2px var(--color-focus);
-
       outline: 0;
     }
   }
@@ -135,4 +135,8 @@
 
 .padding-reset {
   padding: 0;
+}
+
+.active {
+  box-shadow: 0 0 2px 2px var(--color-focus);
 }
