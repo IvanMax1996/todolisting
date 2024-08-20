@@ -6,7 +6,10 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "lib:build": "ng build todolist-lib",
+    "lib:watch": "ng build todolist-lib --watch",
+    "lib:publish": "npm run lib:build && cd dist/todolist-lib && npm pack && npm publish"
   },
   "private": true,
   "dependencies": {
