@@ -28,6 +28,7 @@ export class TodolistItemComponent implements OnInit, AfterViewChecked {
   title: string = "";
   activeTodos$ = this.todolistService.activeTodos$;
   completedTodos$ = this.todolistService.completedTodos$;
+  previousElement?: HTMLElement| undefined
 
   constructor(private todolistService: TodolistService) {}
 
@@ -75,14 +76,19 @@ export class TodolistItemComponent implements OnInit, AfterViewChecked {
   }
 
   active(elem: Event) {
+    const currentElement = elem.currentTarget as HTMLElement;
     const itemArray = document.querySelectorAll(".todolist__item");
 
+    if (currentElement === this.previousElement && currentElement.classList.contains('active')) {
+      currentElement.classList.remove("active");
+      return
+    }
+
     itemArray.forEach(item => {
-      item.classList.remove("active");
+      item.classList.remove('active')
     });
 
-    const block = elem.currentTarget as HTMLElement;
-
-    block.classList.add("active");
+    this.previousElement = currentElement
+    currentElement.classList.add("active");
   }
 }

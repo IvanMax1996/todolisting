@@ -2,11 +2,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
+  OnDestroy,
   Output
 } from "@angular/core";
 import { Status } from "../../shared/types/todolist.type";
 import { TodolistService } from "../../shared/services/todolist.service";
-import { Observable } from "rxjs";
+import { Observable, Subscription } from "rxjs";
 
 @Component({
   selector: "tdl-footer",
@@ -14,7 +15,7 @@ import { Observable } from "rxjs";
   styleUrls: ["./todolist-footer.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TodolistFooterComponent {
+export class TodolistFooterComponent implements OnDestroy {
   @Output() status = new EventEmitter<Status>();
 
   todos$ = this.todolistService.todos$;
@@ -22,6 +23,9 @@ export class TodolistFooterComponent {
     this.todolistService.activeTodosLength$;
   completedTodosLength$: Observable<number> =
     this.todolistService.completedTodosLength$;
+  todosSub: Subscription = this.todos$.subscribe(val => {
+    if (val.length === 0 ) this.status.emit(Status.All);
+  })
   
   constructor(private todolistService: TodolistService) {}
 
@@ -59,9 +63,9 @@ export class TodolistFooterComponent {
 
   clearCompleted(): void {
     this.todolistService.clearCompleted();
+  }
 
-    this.todos$.forEach(item => {
-      if (item.length === 0) this.status.emit(Status.All);
-    });
+  ngOnDestroy(): void {
+    this.todosSub.unsubscribe()
   }
 }

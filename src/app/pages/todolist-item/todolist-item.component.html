@@ -1,4 +1,4 @@
-<div #test [ngClass]="{ 'padding-reset': isEditing }" class="todolist__item" (click)="active($event)">
+<div [ngClass]="{ 'padding-reset': isEditing }" class="todolist__item" (click)="active($event)">
   <ng-container *ngIf="!isEditing; else otherInput">
     <div class="todolist__item-wrap-input">
       <div class="todolist__item-inner-input">
