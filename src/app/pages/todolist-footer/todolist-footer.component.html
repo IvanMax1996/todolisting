@@ -1,4 +1,4 @@
-<ng-container *ngIf="(todos$ | async) as todos">
+<ng-container *ngIf="(todos$ |  async) as todos">
   <ng-container *ngIf="todos.length !== 0">
     <div class="todolist__footer">
       <span class="todolist__count">Осталось задач: {{ activeTodosLength$ | async }}</span>
