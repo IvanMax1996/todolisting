@@ -5,9 +5,9 @@ import {
   OnDestroy,
   Output
 } from "@angular/core";
-import { Status } from "../../shared/types/todolist.type";
-import { TodolistService } from "../../shared/services/todolist.service";
 import { Observable, Subscription } from "rxjs";
+import { Status } from "../../types/todolist.type";
+import { TodolistService } from "../../services/todolist.service";
 
 @Component({
   selector: "tdl-footer",

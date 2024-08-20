@@ -6,9 +6,10 @@ import {
   OnDestroy,
   Output
 } from "@angular/core";
-import { Status, TodoItem } from "../../shared/types/todolist.type";
-import { TodolistService } from "../../shared/services/todolist.service";
+
 import { Subscription } from "rxjs";
+import { Status, TodoItem } from "../../types/todolist.type";
+import { TodolistService } from "../../services/todolist.service";
 
 @Component({
   selector: "tdl-listing",

@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Status } from './shared/types/todolist.type';
-import { TodolistService } from './shared/services/todolist.service';
+import { Status, TodolistService } from '@t1/todolist-lib';
 
 @Component({
   selector: 'app-root',

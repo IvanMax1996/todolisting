@@ -6,7 +6,10 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "lib:build": "ng build todolist-lib",
+    "lib:watch": "ng build todolist-lib --watch",
+    "lib:publish": "npm run lib:build && cd dist/todolist-lib && npm pack && npm publish"
   },
   "private": true,
   "dependencies": {
@@ -33,6 +36,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
+    "ng-packagr": "^14.0.0",
     "typescript": "~4.7.2"
   }
 }
