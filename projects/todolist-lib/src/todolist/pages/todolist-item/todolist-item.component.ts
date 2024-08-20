@@ -9,8 +9,8 @@ import {
   Output,
   ViewChild
 } from "@angular/core";
-import { TodoItem } from "../../shared/types/todolist.type";
-import { TodolistService } from "../../shared/services/todolist.service";
+import { TodoItem } from "../../types/todolist.type";
+import { TodolistService } from "../../services/todolist.service";
 
 @Component({
   selector: "tdl-item",
