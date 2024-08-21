@@ -18,7 +18,7 @@ import { TodolistService } from "../../services/todolist.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodolistListingComponent implements OnDestroy {
-  @Input() statusValue!: Status;
+  @Input() statusValue: Status = Status.All;
   @Output() status = new EventEmitter<Status>();
 
   todos$ = this.todolistService.todos$;
