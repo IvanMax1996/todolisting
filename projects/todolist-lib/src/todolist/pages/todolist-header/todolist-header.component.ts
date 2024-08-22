@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
-import { TodolistService } from "../../shared/services/todolist.service";
-import { Status } from "../../shared/types/todolist.type";
 import { Observable } from "rxjs";
+import { Status } from "../../types/todolist.type";
+import { TodolistService } from "../../services/todolist.service";
 
 @Component({
   selector: "tdl-header",

@@ -6,9 +6,10 @@ import {
   OnDestroy,
   Output
 } from "@angular/core";
-import { Status, TodoItem } from "../../shared/types/todolist.type";
-import { TodolistService } from "../../shared/services/todolist.service";
+
 import { Subscription } from "rxjs";
+import { Status, TodoItem } from "../../types/todolist.type";
+import { TodolistService } from "../../services/todolist.service";
 
 @Component({
   selector: "tdl-listing",
@@ -17,7 +18,7 @@ import { Subscription } from "rxjs";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodolistListingComponent implements OnDestroy {
-  @Input() statusValue!: Status;
+  @Input() statusValue: Status = Status.All;
   @Output() status = new EventEmitter<Status>();
 
   todos$ = this.todolistService.todos$;

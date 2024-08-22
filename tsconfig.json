@@ -22,6 +22,11 @@
       "es2020",
       "dom"
     ],
+    "paths": {
+      "@t1/todolist-lib": [
+        "dist/todolist-lib"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

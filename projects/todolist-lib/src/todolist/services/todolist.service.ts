@@ -10,7 +10,6 @@ import {
   providedIn: "root"
 })
 export class TodolistService {
-  status: Status = Status.All;
   countId: number = 0;
   todos$: BehaviorSubject<TodoItem[]> = new BehaviorSubject<TodoItem[]>([]);
   todosLength$: Observable<number> = this.todos$.pipe(map(item => item.length));
@@ -82,8 +81,8 @@ export class TodolistService {
 
     arrayResult = this.todos$.value.map(item => {
       if (
-        (this.status === Status.All && !isCompleted) ||
-        this.status === Status.Active
+        (status === Status.All && !isCompleted) ||
+        status === Status.Active
       )
         return { ...item, completed: true };
 

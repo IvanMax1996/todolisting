@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Status } from './shared/types/todolist.type';
-import { TodolistService } from './shared/services/todolist.service';
+import { Status } from '@t1/todolist-lib';
 
 @Component({
   selector: 'app-root',
@@ -10,11 +9,7 @@ import { TodolistService } from './shared/services/todolist.service';
 })
 export class AppComponent {
   title = "Todos";
-  status: Status = this.todolistService.status
-
-  constructor(
-    private todolistService: TodolistService
-  ) {}
+  status: Status = Status.All
 
   getStatus(value: Status) {
     this.status = value
