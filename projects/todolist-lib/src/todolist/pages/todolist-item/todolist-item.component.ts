@@ -28,11 +28,13 @@ export class TodolistItemComponent implements OnInit, AfterViewChecked {
   title: string = "";
   activeTodos$ = this.todolistService.activeTodos$;
   completedTodos$ = this.todolistService.completedTodos$;
-  previousElement?: HTMLElement| undefined
+  previousElement?: HTMLElement | undefined
 
   constructor(private todolistService: TodolistService) {}
 
   removeTodo(): void {
+    this.todolistService.deleteTodoItem(this.todo.id)
+
     this.remove.emit(this.todo);
   }
 
@@ -62,19 +64,6 @@ export class TodolistItemComponent implements OnInit, AfterViewChecked {
     this.title = this.todo.title;
   }
 
-  ngOnInit(): void {
-    this.randomLabel =
-      this.todo.title.replace(" ", "-").slice(0, 10) +
-      "-" +
-      Math.floor(Math.random() * 1000);
-  }
-
-  ngAfterViewChecked(): void {
-    if (this.isEditing) {
-      this.inputRef?.nativeElement.focus();
-    }
-  }
-
   active(elem: Event) {
     const currentElement = elem.currentTarget as HTMLElement;
     const itemArray = document.querySelectorAll(".todolist__item");
@@ -90,5 +79,18 @@ export class TodolistItemComponent implements OnInit, AfterViewChecked {
 
     this.previousElement = currentElement
     currentElement.classList.add("active");
+  }
+
+  ngOnInit(): void {
+    this.randomLabel =
+      this.todo.title.replace(" ", "-").slice(0, 10) +
+      "-" +
+      Math.floor(Math.random() * 1000);
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.isEditing) {
+      this.inputRef?.nativeElement.focus();
+    }
   }
 }
