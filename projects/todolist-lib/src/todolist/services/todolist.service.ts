@@ -5,12 +5,12 @@ import {
   map,
   Observable
 } from "rxjs";
+import { HttpClient } from "@angular/common/http";
 
 @Injectable({
   providedIn: "root"
 })
 export class TodolistService {
-  countId: number = 0;
   todos$: BehaviorSubject<TodoItem[]> = new BehaviorSubject<TodoItem[]>([]);
   todosLength$: Observable<number> = this.todos$.pipe(map(item => item.length));
   activeTodos$: Observable<TodoItem[]> = this.getItems(Status.Active);
@@ -22,16 +22,16 @@ export class TodolistService {
     map(item => item.length)
   );
 
+  constructor(private http: HttpClient) {}
+
   addItem(title: string): void {
     const todoItem: TodoItem = {
-      id: this.countId,
+      id: this.todos$.value.length + 1,
       title,
       completed: false
     };
 
     this.todos$.next(this.todos$.value.concat([todoItem]));
-
-    this.countId++;
   }
 
   getItems(status: Status): Observable<TodoItem[]> {
@@ -114,5 +114,29 @@ export class TodolistService {
     });
 
     this.todos$.next(arrayResult);
+  }
+
+  getTodolist(): Observable<TodoItem[]> {
+    return this.http.get<TodoItem[]>('https://jsonplaceholder.typicode.com/todos').pipe(
+      map(item => {
+        item.length = 5
+
+        return item.map(item => {
+          return {
+            id: item.id,
+            title: item.title,
+            completed: item.completed
+          }
+        })
+      })
+    )
+  }
+
+  addTodoItem(body: TodoItem): Observable<TodoItem> {
+    return this.http.post<TodoItem>('https://jsonplaceholder.typicode.com/todos', body)
+  }
+
+  deleteTodoItem(id: number) {
+    return this.http.delete(`https://jsonplaceholder.typicode.com/todos/${id}`)
   }
 }

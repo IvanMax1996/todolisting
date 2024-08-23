@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, Subscription } from "rxjs";
 import { Status } from "../../types/todolist.type";
 import { TodolistService } from "../../services/todolist.service";
 
@@ -18,12 +18,22 @@ export class TodolistHeaderComponent {
     this.todolistService.activeTodosLength$;
   completedTodosLength$: Observable<number> =
     this.todolistService.completedTodosLength$;
-
+  addTodoSub?: Subscription
+    
   constructor(private todolistService: TodolistService) {}
 
   addTodo(): void {
+    const body = {
+      id: 1,
+      userId: 1,
+      completed: false,
+      title: this.title
+    }
+
     if (this.title) {
-      this.todolistService.addItem(this.title);
+      this.addTodoSub = this.todolistService.addTodoItem(body).subscribe(todoItem => {
+        this.todolistService.addItem(todoItem.title);
+      })
 
       this.title = "";
     }
@@ -31,5 +41,9 @@ export class TodolistHeaderComponent {
 
   toggleAll(): void {
     this.todolistService.toggleAll(this.status);
+  }
+
+  ngDestroy() {
+    this.addTodoSub?.unsubscribe()
   }
 }

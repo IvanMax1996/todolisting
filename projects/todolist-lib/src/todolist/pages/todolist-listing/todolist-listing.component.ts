@@ -22,12 +22,15 @@ export class TodolistListingComponent implements OnDestroy {
   @Output() status = new EventEmitter<Status>();
 
   todos$ = this.todolistService.todos$;
-  activeTodos$ = this.todolistService.activeTodos$;
-  completedTodos$ = this.todolistService.completedTodos$;
+  getTodosSub: Subscription = this.todolistService.getTodolist().subscribe(value => {
+    this.todos$.next(value)
+  })
   todosSub: Subscription = this.todos$.subscribe(val => {
     if (val.length === 0 ) this.status.emit(Status.All);
   })
-  
+  activeTodos$ = this.todolistService.activeTodos$;
+  completedTodos$ = this.todolistService.completedTodos$;
+
   constructor(private todolistService: TodolistService) {}
 
   removeTodo(todo: TodoItem): void {
@@ -36,5 +39,6 @@ export class TodolistListingComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.todosSub.unsubscribe()
+    this.getTodosSub.unsubscribe()
   }
 }

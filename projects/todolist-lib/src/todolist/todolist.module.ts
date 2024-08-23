@@ -5,6 +5,7 @@ import { TodolistHeaderComponent } from './pages/todolist-header/todolist-header
 import { TodolistItemComponent } from './pages/todolist-item/todolist-item.component';
 import { TodolistListingComponent } from './pages/todolist-listing/todolist-listing.component';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from "@angular/common/http";
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { FormsModule } from '@angular/forms';
   ],
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    HttpClientModule
   ],
   exports: [
     TodolistFooterComponent,
