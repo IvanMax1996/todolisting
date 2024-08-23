@@ -136,7 +136,11 @@ export class TodolistService {
     return this.http.post<TodoItem>('https://jsonplaceholder.typicode.com/todos', body)
   }
 
-  deleteTodoItem(id: number) {
+  deleteTodoItem(id: number): Observable<object> {
     return this.http.delete(`https://jsonplaceholder.typicode.com/todos/${id}`)
+  }
+
+  updateTodoItem(id: number, body: {title: string, completed: boolean}): Observable<TodoItem> {
+    return this.http.patch<TodoItem>(`https://jsonplaceholder.typicode.com/todos/${id}`, body)
   }
 }

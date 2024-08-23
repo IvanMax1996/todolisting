@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Input, OnDestroy } from "@angular/core";
 import { Observable, Subscription } from "rxjs";
 import { Status } from "../../types/todolist.type";
 import { TodolistService } from "../../services/todolist.service";
@@ -9,7 +9,7 @@ import { TodolistService } from "../../services/todolist.service";
   styleUrls: ["./todolist-header.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TodolistHeaderComponent {
+export class TodolistHeaderComponent implements OnDestroy {
   @Input() status: Status = Status.All;
 
   title: string = "";
@@ -43,7 +43,7 @@ export class TodolistHeaderComponent {
     this.todolistService.toggleAll(this.status);
   }
 
-  ngDestroy() {
+  ngOnDestroy() {
     this.addTodoSub?.unsubscribe()
   }
 }
