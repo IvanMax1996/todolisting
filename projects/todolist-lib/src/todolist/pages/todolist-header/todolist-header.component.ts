@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnDestroy
+} from "@angular/core";
 import { Observable, Subscription } from "rxjs";
 import { Status } from "../../types/todolist.type";
 import { TodolistService } from "../../services/todolist.service";
@@ -18,8 +23,8 @@ export class TodolistHeaderComponent implements OnDestroy {
     this.todolistService.activeTodosLength$;
   completedTodosLength$: Observable<number> =
     this.todolistService.completedTodosLength$;
-  addTodoSub?: Subscription
-    
+  addTodoSub?: Subscription;
+
   constructor(private todolistService: TodolistService) {}
 
   addTodo(): void {
@@ -28,12 +33,14 @@ export class TodolistHeaderComponent implements OnDestroy {
       userId: 1,
       completed: false,
       title: this.title
-    }
+    };
 
     if (this.title) {
-      this.addTodoSub = this.todolistService.addTodoItem(body).subscribe(todoItem => {
-        this.todolistService.addItem(todoItem.title);
-      })
+      this.addTodoSub = this.todolistService
+        .addTodoItem(body)
+        .subscribe(todoItem => {
+          this.todolistService.addItem(todoItem.title);
+        });
 
       this.title = "";
     }
@@ -44,6 +51,6 @@ export class TodolistHeaderComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.addTodoSub?.unsubscribe()
+    this.addTodoSub?.unsubscribe();
   }
 }

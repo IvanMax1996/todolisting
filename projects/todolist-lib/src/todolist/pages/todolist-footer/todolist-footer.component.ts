@@ -8,6 +8,7 @@ import {
 import { Observable, Subscription } from "rxjs";
 import { Status } from "../../types/todolist.type";
 import { TodolistService } from "../../services/todolist.service";
+import { TodoItem } from "../../types/todolist.type";
 
 @Component({
   selector: "tdl-footer",
@@ -24,9 +25,9 @@ export class TodolistFooterComponent implements OnDestroy {
   completedTodosLength$: Observable<number> =
     this.todolistService.completedTodosLength$;
   todosSub: Subscription = this.todos$.subscribe(val => {
-    if (val.length === 0 ) this.status.emit(Status.All);
-  })
-  
+    if (val.length === 0) this.status.emit(Status.All);
+  });
+
   constructor(private todolistService: TodolistService) {}
 
   removeActiveClass(event: Event): void {
@@ -62,10 +63,20 @@ export class TodolistFooterComponent implements OnDestroy {
   }
 
   clearCompleted(): void {
+    const arrayDeleteList: TodoItem[] = this.todos$.value.filter(item => {
+      return item.completed;
+    });
+
+    const arrayDeleteId = arrayDeleteList.map(item => item.id);
+
+    arrayDeleteId.forEach(id => {
+      this.todolistService.deleteTodoItem(id);
+    });
+
     this.todolistService.clearCompleted();
   }
 
   ngOnDestroy(): void {
-    this.todosSub.unsubscribe()
+    this.todosSub.unsubscribe();
   }
 }

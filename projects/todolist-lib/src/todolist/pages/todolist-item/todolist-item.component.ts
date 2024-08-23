@@ -20,7 +20,9 @@ import { Subscription } from "rxjs";
   styleUrls: ["./todolist-item.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TodolistItemComponent implements OnInit, AfterViewChecked, OnDestroy {
+export class TodolistItemComponent
+  implements OnInit, AfterViewChecked, OnDestroy
+{
   @Output() remove = new EventEmitter<TodoItem>();
   @Input() todo!: TodoItem;
   @ViewChild("todoInputRef") inputRef?: ElementRef;
@@ -30,13 +32,13 @@ export class TodolistItemComponent implements OnInit, AfterViewChecked, OnDestro
   title: string = "";
   activeTodos$ = this.todolistService.activeTodos$;
   completedTodos$ = this.todolistService.completedTodos$;
-  previousElement?: HTMLElement | undefined
-  updateTodoSub?: Subscription
+  previousElement?: HTMLElement | undefined;
+  updateTodoSub?: Subscription;
 
   constructor(private todolistService: TodolistService) {}
 
   removeTodo(): void {
-    this.todolistService.deleteTodoItem(this.todo.id)
+    this.todolistService.deleteTodoItem(this.todo.id);
 
     this.remove.emit(this.todo);
   }
@@ -53,14 +55,16 @@ export class TodolistItemComponent implements OnInit, AfterViewChecked, OnDestro
     const body = {
       title: this.title,
       completed: this.todo.completed
-    }
+    };
 
     if (!this.title) {
       this.remove.emit(this.todo);
     } else {
-      this.updateTodoSub = this.todolistService.updateTodoItem(this.todo.id, body).subscribe(todoItem => {
-        this.todolistService.updateTodo(todoItem, todoItem.title);
-      })
+      this.updateTodoSub = this.todolistService
+        .updateTodoItem(this.todo.id, body)
+        .subscribe(todoItem => {
+          this.todolistService.updateTodo(todoItem, todoItem.title);
+        });
     }
 
     this.isEditing = false;
@@ -78,16 +82,19 @@ export class TodolistItemComponent implements OnInit, AfterViewChecked, OnDestro
     const currentElement = elem.currentTarget as HTMLElement;
     const itemArray = document.querySelectorAll(".todolist__item");
 
-    if (currentElement === this.previousElement && currentElement.classList.contains('active')) {
+    if (
+      currentElement === this.previousElement &&
+      currentElement.classList.contains("active")
+    ) {
       currentElement.classList.remove("active");
-      return
+      return;
     }
 
     itemArray.forEach(item => {
-      item.classList.remove('active')
+      item.classList.remove("active");
     });
 
-    this.previousElement = currentElement
+    this.previousElement = currentElement;
     currentElement.classList.add("active");
   }
 
@@ -105,6 +112,6 @@ export class TodolistItemComponent implements OnInit, AfterViewChecked, OnDestro
   }
 
   ngOnDestroy() {
-    this.updateTodoSub?.unsubscribe()
+    this.updateTodoSub?.unsubscribe();
   }
 }
