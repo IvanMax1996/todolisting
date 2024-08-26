@@ -38,8 +38,6 @@ export class TodolistItemComponent
   constructor(private todolistService: TodolistService) {}
 
   removeTodo(): void {
-    this.todolistService.deleteTodoItem(this.todo.id);
-
     this.remove.emit(this.todo);
   }
 
@@ -60,11 +58,7 @@ export class TodolistItemComponent
     if (!this.title) {
       this.remove.emit(this.todo);
     } else {
-      this.updateTodoSub = this.todolistService
-        .updateTodoItem(this.todo.id, body)
-        .subscribe(todoItem => {
-          this.todolistService.updateTodo(todoItem, todoItem.title);
-        });
+      this.updateTodoSub = this.todolistService.updateTodo(this.todo.id, body).subscribe()
     }
 
     this.isEditing = false;

@@ -19,7 +19,10 @@ export class TodolistService {
     map(item => item.length)
   );
 
-  constructor(private http: HttpClient, private todolistRequestsService: TodolistRequestsService) {}
+  constructor(
+    private http: HttpClient,
+    private todolistRequestsService: TodolistRequestsService
+  ) {}
 
   addItem(body: TodoItem): Observable<TodoItem> {
     return this.todolistRequestsService.addTodoItem(body).pipe(
@@ -32,7 +35,7 @@ export class TodolistService {
 
         this.todos$.next(this.todos$.value.concat([todoItem]));
       })
-    )
+    );
   }
 
   getItems(status: Status): Observable<TodoItem[]> {
@@ -48,6 +51,8 @@ export class TodolistService {
   }
 
   removeItem(id: number): void {
+    this.todolistRequestsService.deleteTodoItem(id)
+
     const indexItem: number = this.todos$.value.findIndex(
       item => item.id === id
     );
@@ -90,21 +95,35 @@ export class TodolistService {
     this.todos$.next(arrayResult);
   }
 
-  updateTodo(todo: TodoItem, title: string): void {
-    let arrayResult: TodoItem[];
+  updateTodo(id: number, body: { title: string; completed: boolean }): Observable<TodoItem> {
+    return this.todolistRequestsService.updateTodoItem(id, body).pipe(
+      tap(todo => {
+        let arrayResult: TodoItem[];
 
-    arrayResult = this.todos$.value.map(item => {
-      if (item.id === todo.id) {
-        return { ...item, title };
-      }
+        arrayResult = this.todos$.value.map(item => {
+          if (item.id === todo.id) {
+            return { ...item, title: todo.title};
+          }
 
-      return item;
-    });
+          return item;
+        });
 
-    this.todos$.next(arrayResult);
+        this.todos$.next(arrayResult);
+      })
+    );
   }
 
   clearCompleted(): void {
+    const arrayDeleteList: TodoItem[] = this.todos$.value.filter(item => {
+      return item.completed;
+    });
+
+    const arrayDeleteId = arrayDeleteList.map(item => item.id);
+
+    arrayDeleteId.forEach(id => {
+      this.todolistRequestsService.deleteTodoItem(id);
+    });
+
     let arrayResult: TodoItem[] = [];
 
     arrayResult = this.todos$.value.filter(item => {
@@ -130,26 +149,5 @@ export class TodolistService {
           });
         })
       );
-  }
-
-  addTodoItem(body: TodoItem): Observable<TodoItem> {
-    return this.http.post<TodoItem>(
-      "https://jsonplaceholder.typicode.com/todos",
-      body
-    );
-  }
-
-  deleteTodoItem(id: number): Observable<object> {
-    return this.http.delete(`https://jsonplaceholder.typicode.com/todos/${id}`);
-  }
-
-  updateTodoItem(
-    id: number,
-    body: { title: string; completed: boolean }
-  ): Observable<TodoItem> {
-    return this.http.patch<TodoItem>(
-      `https://jsonplaceholder.typicode.com/todos/${id}`,
-      body
-    );
   }
 }

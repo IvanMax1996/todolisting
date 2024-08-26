@@ -63,16 +63,6 @@ export class TodolistFooterComponent implements OnDestroy {
   }
 
   clearCompleted(): void {
-    const arrayDeleteList: TodoItem[] = this.todos$.value.filter(item => {
-      return item.completed;
-    });
-
-    const arrayDeleteId = arrayDeleteList.map(item => item.id);
-
-    arrayDeleteId.forEach(id => {
-      this.todolistService.deleteTodoItem(id);
-    });
-
     this.todolistService.clearCompleted();
   }
 
