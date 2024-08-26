@@ -33,12 +33,15 @@ export class TodolistListingComponent implements OnInit, OnDestroy {
     this.todolistService.removeItem(todo.id);
   }
 
+  getLocalStorage(): void {
+    this.todolistService.getTodolist()
+    
+    const todoList: TodoItem[] = this.todolistService.getLocalStorage()
+    this.todos$.next(todoList);
+  }
+
   ngOnInit() {
-    this.todolistService
-    .getTodolist()
-    .subscribe(value => {
-      this.todos$.next(value);
-    });
+    this.getLocalStorage()
 
     this.todos$.subscribe(todo => {
       if (todo.length === 0) this.status.emit(Status.All);

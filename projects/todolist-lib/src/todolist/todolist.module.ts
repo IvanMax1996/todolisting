@@ -5,7 +5,8 @@ import { TodolistHeaderComponent } from "./pages/todolist-header/todolist-header
 import { TodolistItemComponent } from "./pages/todolist-item/todolist-item.component";
 import { TodolistListingComponent } from "./pages/todolist-listing/todolist-listing.component";
 import { FormsModule } from "@angular/forms";
-import { HttpClientModule } from "@angular/common/http";
+import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
+import { TodolistInterceptor } from "./interceptor/todolist.interceptor";
 
 @NgModule({
   declarations: [
@@ -20,6 +21,9 @@ import { HttpClientModule } from "@angular/common/http";
     TodolistHeaderComponent,
     TodolistItemComponent,
     TodolistListingComponent
+  ],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: TodolistInterceptor, multi: true }
   ]
 })
 export class TodolistModule {}

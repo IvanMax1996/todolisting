@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Status, TodoItem } from "../types/todolist.type";
-import { BehaviorSubject, map, Observable, of, tap } from "rxjs";
-import { HttpClient } from "@angular/common/http";
+import { BehaviorSubject, map, Observable, tap } from "rxjs";
 import { TodolistRequestsService } from "./todolist-requests.service";
 
 @Injectable({
@@ -19,10 +18,7 @@ export class TodolistService {
     map(item => item.length)
   );
 
-  constructor(
-    private http: HttpClient,
-    private todolistRequestsService: TodolistRequestsService
-  ) {}
+  constructor(private todolistRequestsService: TodolistRequestsService) {}
 
   addItem(body: TodoItem): Observable<TodoItem> {
     return this.todolistRequestsService.addTodoItem(body).pipe(
@@ -33,7 +29,11 @@ export class TodolistService {
           completed: todo.completed
         };
 
-        this.todos$.next(this.todos$.value.concat([todoItem]));
+        const arrayResult = this.todos$.value.concat([todoItem])
+
+        this.todos$.next(arrayResult);
+
+        // this.setLocalStorage(arrayResult)
       })
     );
   }
@@ -51,7 +51,7 @@ export class TodolistService {
   }
 
   removeItem(id: number): void {
-    this.todolistRequestsService.deleteTodoItem(id)
+    this.todolistRequestsService.deleteTodoItem(id);
 
     const indexItem: number = this.todos$.value.findIndex(
       item => item.id === id
@@ -59,6 +59,8 @@ export class TodolistService {
 
     this.todos$.value.splice(indexItem, 1);
     this.todos$.next(this.todos$.value);
+
+    // this.setLocalStorage(this.todos$.value)
   }
 
   toggleCheckedItem(todo: TodoItem): void {
@@ -71,6 +73,8 @@ export class TodolistService {
     });
 
     this.todos$.next(arrayResult);
+
+    // this.setLocalStorage(arrayResult)
   }
 
   toggleAll(status: Status): void {
@@ -93,22 +97,29 @@ export class TodolistService {
     });
 
     this.todos$.next(arrayResult);
+
+    // this.setLocalStorage(arrayResult)
   }
 
-  updateTodo(id: number, body: { title: string; completed: boolean }): Observable<TodoItem> {
+  updateTodo(
+    id: number,
+    body: { title: string; completed: boolean }
+  ): Observable<TodoItem> {
     return this.todolistRequestsService.updateTodoItem(id, body).pipe(
       tap(todo => {
         let arrayResult: TodoItem[];
 
         arrayResult = this.todos$.value.map(item => {
           if (item.id === todo.id) {
-            return { ...item, title: todo.title};
+            return { ...item, title: todo.title };
           }
 
           return item;
         });
 
         this.todos$.next(arrayResult);
+
+        // this.setLocalStorage(arrayResult)
       })
     );
   }
@@ -131,9 +142,27 @@ export class TodolistService {
     });
 
     this.todos$.next(arrayResult);
+
+    // this.setLocalStorage(arrayResult)
   }
 
   getTodolist(): Observable<TodoItem[]> {
-    return this.todolistRequestsService.getTodolist()
+    return this.todolistRequestsService.getTodolist();
   }
+
+  getLocalStorage(): TodoItem[] {
+    const todoListJson: string | null = localStorage.getItem("todolist");
+    let todoList: TodoItem[] = [];
+
+    if (todoListJson) {
+      todoList = JSON.parse(todoListJson);
+    }
+
+    return todoList;
+  }
+
+  // setLocalStorage(arrayTodo: TodoItem[]) {
+  //   const arrayResultJson: string = JSON.stringify(arrayTodo);
+  //   localStorage.setItem("todolist", arrayResultJson);
+  // }
 }
