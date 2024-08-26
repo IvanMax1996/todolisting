@@ -12,7 +12,7 @@ import {
 } from "@angular/core";
 import { TodoItem } from "../../types/todolist.type";
 import { TodolistService } from "../../services/todolist.service";
-import { Subscription } from "rxjs";
+import { Subject, takeUntil } from "rxjs";
 
 @Component({
   selector: "tdl-item",
@@ -33,7 +33,7 @@ export class TodolistItemComponent
   activeTodos$ = this.todolistService.activeTodos$;
   completedTodos$ = this.todolistService.completedTodos$;
   previousElement?: HTMLElement | undefined;
-  updateTodoSub?: Subscription;
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private todolistService: TodolistService) {}
 
@@ -58,7 +58,10 @@ export class TodolistItemComponent
     if (!this.title) {
       this.remove.emit(this.todo);
     } else {
-      this.updateTodoSub = this.todolistService.updateTodo(this.todo.id, body).subscribe()
+      this.todolistService
+        .updateTodo(this.todo.id, body)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe();
     }
 
     this.isEditing = false;
@@ -106,6 +109,7 @@ export class TodolistItemComponent
   }
 
   ngOnDestroy() {
-    this.updateTodoSub?.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }

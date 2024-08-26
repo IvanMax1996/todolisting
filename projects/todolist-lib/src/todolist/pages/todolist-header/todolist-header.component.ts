@@ -4,7 +4,7 @@ import {
   Input,
   OnDestroy
 } from "@angular/core";
-import { Observable, Subscription } from "rxjs";
+import { Observable, Subject, takeUntil } from "rxjs";
 import { Status } from "../../types/todolist.type";
 import { TodolistService } from "../../services/todolist.service";
 
@@ -23,7 +23,7 @@ export class TodolistHeaderComponent implements OnDestroy {
     this.todolistService.activeTodosLength$;
   completedTodosLength$: Observable<number> =
     this.todolistService.completedTodosLength$;
-  addTodoSub?: Subscription;
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private todolistService: TodolistService) {}
 
@@ -35,10 +35,12 @@ export class TodolistHeaderComponent implements OnDestroy {
       title: this.title
     };
 
-    
     if (this.title) {
-      this.addTodoSub = this.todolistService.addItem(body).subscribe()
-    
+      this.todolistService
+        .addItem(body)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe();
+
       this.title = "";
     }
   }
@@ -48,6 +50,7 @@ export class TodolistHeaderComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.addTodoSub?.unsubscribe();
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }
