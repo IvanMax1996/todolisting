@@ -8,7 +8,6 @@ import {
 import { Observable, Subscription } from "rxjs";
 import { Status } from "../../types/todolist.type";
 import { TodolistService } from "../../services/todolist.service";
-import { TodoItem } from "../../types/todolist.type";
 
 @Component({
   selector: "tdl-footer",

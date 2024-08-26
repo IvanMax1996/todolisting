@@ -134,20 +134,6 @@ export class TodolistService {
   }
 
   getTodolist(): Observable<TodoItem[]> {
-    return this.http
-      .get<TodoItem[]>("https://jsonplaceholder.typicode.com/todos")
-      .pipe(
-        map(item => {
-          item.length = 5;
-
-          return item.map(item => {
-            return {
-              id: item.id,
-              title: item.title,
-              completed: item.completed
-            };
-          });
-        })
-      );
+    return this.todolistRequestsService.getTodolist()
   }
 }
