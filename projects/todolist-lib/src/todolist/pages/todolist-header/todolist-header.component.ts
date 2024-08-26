@@ -27,7 +27,7 @@ export class TodolistHeaderComponent implements OnDestroy {
 
   constructor(private todolistService: TodolistService) {}
 
-  addTodo(): void {
+  addTodo() {
     const body = {
       id: 1,
       userId: 1,
@@ -35,13 +35,10 @@ export class TodolistHeaderComponent implements OnDestroy {
       title: this.title
     };
 
+    
     if (this.title) {
-      this.addTodoSub = this.todolistService
-        .addTodoItem(body)
-        .subscribe(todoItem => {
-          this.todolistService.addItem(todoItem.title);
-        });
-
+      this.addTodoSub = this.todolistService.addItem(body).subscribe()
+    
       this.title = "";
     }
   }

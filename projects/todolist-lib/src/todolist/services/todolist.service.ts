@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Status, TodoItem } from "../types/todolist.type";
-import { BehaviorSubject, map, Observable } from "rxjs";
+import { BehaviorSubject, map, Observable, of, tap } from "rxjs";
 import { HttpClient } from "@angular/common/http";
+import { TodolistRequestsService } from "./todolist-requests.service";
 
 @Injectable({
   providedIn: "root"
@@ -18,16 +19,20 @@ export class TodolistService {
     map(item => item.length)
   );
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private todolistRequestsService: TodolistRequestsService) {}
 
-  addItem(title: string): void {
-    const todoItem: TodoItem = {
-      id: Date.now(),
-      title,
-      completed: false
-    };
+  addItem(body: TodoItem): Observable<TodoItem> {
+    return this.todolistRequestsService.addTodoItem(body).pipe(
+      tap(todo => {
+        const todoItem: TodoItem = {
+          id: Date.now(),
+          title: todo.title,
+          completed: todo.completed
+        };
 
-    this.todos$.next(this.todos$.value.concat([todoItem]));
+        this.todos$.next(this.todos$.value.concat([todoItem]));
+      })
+    )
   }
 
   getItems(status: Status): Observable<TodoItem[]> {
