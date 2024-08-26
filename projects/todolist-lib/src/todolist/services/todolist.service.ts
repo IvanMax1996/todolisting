@@ -22,7 +22,7 @@ export class TodolistService {
 
   addItem(title: string): void {
     const todoItem: TodoItem = {
-      id: this.todos$.value.length + 1,
+      id: Date.now(),
       title,
       completed: false
     };
