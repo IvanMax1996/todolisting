@@ -35,8 +35,6 @@ export class TodolistInterceptor implements HttpInterceptor {
         tap(todoList => {
           const todolistJson = JSON.stringify(todoList);
 
-          console.log('dfs')
-
           localStorage.setItem("todolist", todolistJson);
         })
       );

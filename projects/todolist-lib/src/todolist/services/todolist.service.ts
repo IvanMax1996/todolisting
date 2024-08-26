@@ -32,8 +32,6 @@ export class TodolistService {
         const arrayResult = this.todos$.value.concat([todoItem])
 
         this.todos$.next(arrayResult);
-
-        // this.setLocalStorage(arrayResult)
       })
     );
   }
@@ -59,8 +57,6 @@ export class TodolistService {
 
     this.todos$.value.splice(indexItem, 1);
     this.todos$.next(this.todos$.value);
-
-    // this.setLocalStorage(this.todos$.value)
   }
 
   toggleCheckedItem(todo: TodoItem): void {
@@ -73,8 +69,6 @@ export class TodolistService {
     });
 
     this.todos$.next(arrayResult);
-
-    // this.setLocalStorage(arrayResult)
   }
 
   toggleAll(status: Status): void {
@@ -97,8 +91,6 @@ export class TodolistService {
     });
 
     this.todos$.next(arrayResult);
-
-    // this.setLocalStorage(arrayResult)
   }
 
   updateTodo(
@@ -118,8 +110,6 @@ export class TodolistService {
         });
 
         this.todos$.next(arrayResult);
-
-        // this.setLocalStorage(arrayResult)
       })
     );
   }
@@ -142,8 +132,6 @@ export class TodolistService {
     });
 
     this.todos$.next(arrayResult);
-
-    // this.setLocalStorage(arrayResult)
   }
 
   getTodolist(): Observable<TodoItem[]> {
@@ -160,9 +148,4 @@ export class TodolistService {
 
     return todoList;
   }
-
-  // setLocalStorage(arrayTodo: TodoItem[]) {
-  //   const arrayResultJson: string = JSON.stringify(arrayTodo);
-  //   localStorage.setItem("todolist", arrayResultJson);
-  // }
 }
