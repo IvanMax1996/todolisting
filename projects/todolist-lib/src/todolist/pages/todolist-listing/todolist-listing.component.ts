@@ -4,10 +4,11 @@ import {
   EventEmitter,
   Input,
   OnDestroy,
+  OnInit,
   Output
 } from "@angular/core";
 
-import { Subscription } from "rxjs";
+import { Subject  } from "rxjs";
 import { Status, TodoItem } from "../../types/todolist.type";
 import { TodolistService } from "../../services/todolist.service";
 
@@ -17,24 +18,38 @@ import { TodolistService } from "../../services/todolist.service";
   styleUrls: ["./todolist-listing.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TodolistListingComponent implements OnDestroy {
+export class TodolistListingComponent implements OnInit, OnDestroy {
   @Input() statusValue: Status = Status.All;
   @Output() status = new EventEmitter<Status>();
 
   todos$ = this.todolistService.todos$;
   activeTodos$ = this.todolistService.activeTodos$;
   completedTodos$ = this.todolistService.completedTodos$;
-  todosSub: Subscription = this.todos$.subscribe(val => {
-    if (val.length === 0 ) this.status.emit(Status.All);
-  })
-  
+  destroy$: Subject<boolean> = new Subject<boolean>();
+
   constructor(private todolistService: TodolistService) {}
 
   removeTodo(todo: TodoItem): void {
     this.todolistService.removeItem(todo.id);
   }
 
+  getLocalStorage(): void {
+    this.todolistService.getTodolist()
+    
+    const todoList: TodoItem[] = this.todolistService.getLocalStorage()
+    this.todos$.next(todoList);
+  }
+
+  ngOnInit() {
+    this.getLocalStorage()
+
+    this.todos$.subscribe(todo => {
+      if (todo.length === 0) this.status.emit(Status.All);
+    });
+  }
+
   ngOnDestroy() {
-    this.todosSub.unsubscribe()
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }

@@ -1,16 +1,12 @@
 import { Injectable } from "@angular/core";
 import { Status, TodoItem } from "../types/todolist.type";
-import {
-  BehaviorSubject,
-  map,
-  Observable
-} from "rxjs";
+import { BehaviorSubject, map, Observable, tap } from "rxjs";
+import { TodolistRequestsService } from "./todolist-requests.service";
 
 @Injectable({
   providedIn: "root"
 })
 export class TodolistService {
-  countId: number = 0;
   todos$: BehaviorSubject<TodoItem[]> = new BehaviorSubject<TodoItem[]>([]);
   todosLength$: Observable<number> = this.todos$.pipe(map(item => item.length));
   activeTodos$: Observable<TodoItem[]> = this.getItems(Status.Active);
@@ -22,16 +18,22 @@ export class TodolistService {
     map(item => item.length)
   );
 
-  addItem(title: string): void {
-    const todoItem: TodoItem = {
-      id: this.countId,
-      title,
-      completed: false
-    };
+  constructor(private todolistRequestsService: TodolistRequestsService) {}
 
-    this.todos$.next(this.todos$.value.concat([todoItem]));
+  addItem(body: TodoItem): Observable<TodoItem> {
+    return this.todolistRequestsService.addTodoItem(body).pipe(
+      tap(todo => {
+        const todoItem: TodoItem = {
+          id: Date.now(),
+          title: todo.title,
+          completed: todo.completed
+        };
 
-    this.countId++;
+        const arrayResult = this.todos$.value.concat([todoItem])
+
+        this.todos$.next(arrayResult);
+      })
+    );
   }
 
   getItems(status: Status): Observable<TodoItem[]> {
@@ -47,6 +49,8 @@ export class TodolistService {
   }
 
   removeItem(id: number): void {
+    this.todolistRequestsService.deleteTodoItem(id);
+
     const indexItem: number = this.todos$.value.findIndex(
       item => item.id === id
     );
@@ -80,10 +84,7 @@ export class TodolistService {
     }
 
     arrayResult = this.todos$.value.map(item => {
-      if (
-        (status === Status.All && !isCompleted) ||
-        status === Status.Active
-      )
+      if ((status === Status.All && !isCompleted) || status === Status.Active)
         return { ...item, completed: true };
 
       return { ...item, completed: false };
@@ -92,21 +93,38 @@ export class TodolistService {
     this.todos$.next(arrayResult);
   }
 
-  updateTodo(todo: TodoItem, title: string): void {
-    let arrayResult: TodoItem[];
+  updateTodo(
+    id: number,
+    body: { title: string; completed: boolean }
+  ): Observable<TodoItem> {
+    return this.todolistRequestsService.updateTodoItem(id, body).pipe(
+      tap(todo => {
+        let arrayResult: TodoItem[];
 
-    arrayResult = this.todos$.value.map(item => {
-      if (item.id === todo.id) {
-        return { ...item, title };
-      }
+        arrayResult = this.todos$.value.map(item => {
+          if (item.id === todo.id) {
+            return { ...item, title: todo.title };
+          }
 
-      return item;
-    });
+          return item;
+        });
 
-    this.todos$.next(arrayResult);
+        this.todos$.next(arrayResult);
+      })
+    );
   }
 
   clearCompleted(): void {
+    const arrayDeleteList: TodoItem[] = this.todos$.value.filter(item => {
+      return item.completed;
+    });
+
+    const arrayDeleteId = arrayDeleteList.map(item => item.id);
+
+    arrayDeleteId.forEach(id => {
+      this.todolistRequestsService.deleteTodoItem(id);
+    });
+
     let arrayResult: TodoItem[] = [];
 
     arrayResult = this.todos$.value.filter(item => {
@@ -114,5 +132,20 @@ export class TodolistService {
     });
 
     this.todos$.next(arrayResult);
+  }
+
+  getTodolist(): Observable<TodoItem[]> {
+    return this.todolistRequestsService.getTodolist();
+  }
+
+  getLocalStorage(): TodoItem[] {
+    const todoListJson: string | null = localStorage.getItem("todolist");
+    let todoList: TodoItem[] = [];
+
+    if (todoListJson) {
+      todoList = JSON.parse(todoListJson);
+    }
+
+    return todoList;
   }
 }
