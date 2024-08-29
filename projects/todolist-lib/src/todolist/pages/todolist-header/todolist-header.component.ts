@@ -17,7 +17,6 @@ import { TodolistService } from "../../services/todolist.service";
 export class TodolistHeaderComponent implements OnDestroy {
   @Input() status: Status = Status.All;
 
-  title: string = "";
   todosLength$: Observable<number> = this.todolistService.todosLength$;
   activeTodosLength$: Observable<number> =
     this.todolistService.activeTodosLength$;
@@ -25,9 +24,11 @@ export class TodolistHeaderComponent implements OnDestroy {
     this.todolistService.completedTodosLength$;
   destroy$: Subject<boolean> = new Subject<boolean>();
 
+  title: string = "";
+
   constructor(private todolistService: TodolistService) {}
 
-  addTodo() {
+  addTodo(): void {
     const body = {
       id: 1,
       userId: 1,
@@ -49,7 +50,7 @@ export class TodolistHeaderComponent implements OnDestroy {
     this.todolistService.toggleAll(this.status);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }

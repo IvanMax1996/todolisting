@@ -8,9 +8,10 @@ import {
   Output
 } from "@angular/core";
 
-import { Subject  } from "rxjs";
+import { Subject, takeUntil } from "rxjs";
 import { Status, TodoItem } from "../../types/todolist.type";
 import { TodolistService } from "../../services/todolist.service";
+import { TodolistRequestsService } from "../../services/todolist-requests.service";
 
 @Component({
   selector: "tdl-listing",
@@ -27,9 +28,14 @@ export class TodolistListingComponent implements OnInit, OnDestroy {
   completedTodos$ = this.todolistService.completedTodos$;
   destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private todolistService: TodolistService) {}
+  constructor(private todolistService: TodolistService, private todoListRequestService: TodolistRequestsService) {}
 
   removeTodo(todo: TodoItem): void {
+    this.todoListRequestService
+      .deleteTodoItem(todo.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe();
+
     this.todolistService.removeItem(todo.id);
   }
 
@@ -40,15 +46,15 @@ export class TodolistListingComponent implements OnInit, OnDestroy {
     this.todos$.next(todoList);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.getLocalStorage()
 
-    this.todos$.subscribe(todo => {
-      if (todo.length === 0) this.status.emit(Status.All);
+    this.todos$.subscribe((todos: TodoItem[]) => {
+      if (todos.length === 0) this.status.emit(Status.All);
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }

@@ -12,7 +12,7 @@ import {
 } from "@angular/core";
 import { TodoItem } from "../../types/todolist.type";
 import { TodolistService } from "../../services/todolist.service";
-import { Subject, takeUntil } from "rxjs";
+import { Observable, Subject, takeUntil } from "rxjs";
 
 @Component({
   selector: "tdl-item",
@@ -27,15 +27,18 @@ export class TodolistItemComponent
   @Input() todo!: TodoItem;
   @ViewChild("todoInputRef") inputRef?: ElementRef;
 
-  isEditing = false;
-  randomLabel: string = "";
-  title: string = "";
-  activeTodos$ = this.todolistService.activeTodos$;
-  completedTodos$ = this.todolistService.completedTodos$;
+  activeTodos$: Observable<TodoItem[]> = this.todolistService.activeTodos$;
+  completedTodos$: Observable<TodoItem[]> = this.todolistService.completedTodos$;
   previousElement?: HTMLElement | undefined;
   destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private todolistService: TodolistService) {}
+  isEditing = false;
+  randomLabel: string = "";
+  title: string = "";
+
+  constructor(
+    private todolistService: TodolistService
+  ) {}
 
   removeTodo(): void {
     this.remove.emit(this.todo);
@@ -75,7 +78,7 @@ export class TodolistItemComponent
     this.title = this.todo.title;
   }
 
-  active(elem: Event) {
+  activeItem(elem: Event): void {
     const currentElement = elem.currentTarget as HTMLElement;
     const itemArray = document.querySelectorAll(".todolist__item");
 
@@ -108,7 +111,7 @@ export class TodolistItemComponent
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.unsubscribe();
   }

@@ -4,9 +4,10 @@ import {
   EventEmitter,
   Output
 } from "@angular/core";
-import { Observable } from "rxjs";
-import { Status } from "../../types/todolist.type";
+import { BehaviorSubject, Observable, Subject, takeUntil } from "rxjs";
+import { Status, TodoItem } from "../../types/todolist.type";
 import { TodolistService } from "../../services/todolist.service";
+import { TodolistRequestsService } from "../../services/todolist-requests.service";
 
 @Component({
   selector: "tdl-footer",
@@ -17,24 +18,28 @@ import { TodolistService } from "../../services/todolist.service";
 export class TodolistFooterComponent {
   @Output() status = new EventEmitter<Status>();
 
-  todos$ = this.todolistService.todos$;
+  todos$: BehaviorSubject<TodoItem[]> = this.todolistService.todos$;
   activeTodosLength$: Observable<number> =
     this.todolistService.activeTodosLength$;
   completedTodosLength$: Observable<number> =
     this.todolistService.completedTodosLength$;
+  destroy$: Subject<boolean> = new Subject<boolean>();
 
-  constructor(private todolistService: TodolistService) {}
+  constructor(
+    private todolistService: TodolistService,
+    private todoListRequestsService: TodolistRequestsService
+  ) {}
 
   removeActiveClass(event: Event): void {
-    const allBtnFooter = document.querySelectorAll(
+    const allBtnFooter: NodeListOf<Element> = document.querySelectorAll(
       ".todolist__footer-btn-wrap button"
     );
 
-    allBtnFooter.forEach(btn => {
+    allBtnFooter.forEach((btn: Element) => {
       btn.classList.remove("active");
     });
 
-    const btn = <HTMLElement>event.target;
+    const btn: HTMLElement = <HTMLElement>event.target;
 
     btn.classList.add("active");
   }
@@ -58,6 +63,20 @@ export class TodolistFooterComponent {
   }
 
   clearCompleted(): void {
-    this.todolistService.clearCompleted();
+    const arrayDeleteId: number[] = this.todolistService.clearCompletedId();
+
+    arrayDeleteId.forEach((id: number) => {
+      this.todoListRequestsService
+        .deleteTodoItem(id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe();
+    });
+
+    this.todolistService.clearCompletedAll();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }
